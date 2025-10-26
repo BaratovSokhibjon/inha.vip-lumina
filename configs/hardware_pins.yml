@@ -1,0 +1,39 @@
+# Hardware pin mappings for Lumina
+
+# RGB LED Pins (Individual LEDs)
+rgb_led_1_red_pin: 18
+rgb_led_1_green_pin: 19
+rgb_led_1_blue_pin: 20
+
+rgb_led_2_red_pin: 21
+rgb_led_2_green_pin: 22
+rgb_led_2_blue_pin: 23
+
+rgb_led_3_red_pin: 24
+rgb_led_3_green_pin: 25
+rgb_led_3_blue_pin: 26
+
+# LED Strip Configuration
+led_strip_pin: 12
+led_strip_count: 60
+
+# Button Pins
+power_button_pin: 2
+color_button_pin: 3
+mode_button_pin: 4
+
+# MCP3008 ADC Pins (for potentiometer)
+mcp3008_clk_pin: 11
+mcp3008_miso_pin: 9
+mcp3008_mosi_pin: 10
+mcp3008_cs_pin: 8
+brightness_channel: 0
+
+# Speaker Pin
+speaker_pin: 13
+
+# Button Settings
+button_debounce_time: 0.2
+
+# System Settings
+system_startup_delay: 2

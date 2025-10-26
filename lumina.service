@@ -1,0 +1,13 @@
+[Unit]
+Description=Lumina Smart Home Service
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/lumina
+ExecStart=/usr/bin/env python3 -m lumina.core.main
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

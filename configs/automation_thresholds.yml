@@ -1,0 +1,18 @@
+# Automation thresholds for Lumina
+
+# Thresholds and Limits
+earthquake_min_magnitude: 5.5
+bad_air_threshold: 100
+cold_temperature_threshold: 18
+hot_temperature_threshold: 28
+
+# Check Intervals (seconds)
+earthquake_check_interval: 300
+air_quality_check_interval: 600
+weather_check_interval: 900
+
+# ML Model Settings
+ml_learning_period_days: 7
+ml_prediction_accuracy_threshold: 0.75
+ml_model_update_interval: 3600
+ml_data_collection_interval: 60
