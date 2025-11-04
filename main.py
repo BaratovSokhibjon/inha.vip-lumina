@@ -24,9 +24,11 @@ from pathlib import Path
 # Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from config import settings
-from src.lamp import LampController
+from lumina.config import settings
+from lumina.hardware.lamp import LampController
 from lumina.utils.base import Utils
+from lumina.utils.logging import setup_logging
+from lumina.utils.config import load_config
 
 
 class SmartLampApp:
@@ -35,11 +37,13 @@ class SmartLampApp:
     def __init__(self, debug=False, enable_web=True):
         self.debug = debug
         self.enable_web = enable_web
+        self.config = load_config()
         self.utils = Utils()
 
         # Setup logging
-        log_level = "DEBUG" if debug else settings.LOG_LEVEL
-        self.utils.setup_logging(settings.LOG_FILE_PATH, log_level)
+        log_level = "DEBUG" if debug else self.config.get("logging", {}).get("level", "INFO")
+        log_file = self.config.get("logging", {}).get("file", "logs/lumina.log")
+        setup_logging(log_file, log_level)
         self.logger = logging.getLogger(__name__)
 
         # Core components
@@ -77,9 +81,10 @@ class SmartLampApp:
             if not os.path.exists(dir_path):
                 issues.append(f"Missing directory: {dir_path}")
 
-        # Check database
-        if not os.path.exists(settings.DATABASE_PATH):
-            issues.append("Database not initialized")
+        # Check data directory (database will be created automatically)
+        data_dir = os.path.dirname(settings.DATABASE_PATH)
+        if not os.path.exists(data_dir):
+            issues.append(f"Data directory not found: {data_dir}")
 
         if issues:
             self.logger.error("Setup issues found:")
@@ -96,7 +101,7 @@ class SmartLampApp:
         self.logger.info("Starting lamp controller...")
 
         try:
-            self.lamp_controller = LampController()
+            self.lamp_controller = LampController(self.config)
             self.lamp_controller.start_automation()
 
             self.logger.info("✓ Lamp controller started successfully")
@@ -115,7 +120,7 @@ class SmartLampApp:
         self.logger.info("Starting web interface...")
 
         try:
-            web_app_path = os.path.join("web", "app.py")
+            web_app_path = os.path.join("src", "lumina", "web", "app.py")
 
             if not os.path.exists(web_app_path):
                 self.logger.warning(f"Web app not found at {web_app_path}")

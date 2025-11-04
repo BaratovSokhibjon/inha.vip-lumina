@@ -10,6 +10,13 @@ import threading
 import logging
 from typing import Tuple, Callable, Optional
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# Check for forced simulation mode
+SIMULATION_MODE = os.getenv('SIMULATION_MODE', '').lower() in ('true', '1', 'yes', 'on')
+
 try:
     import RPi.GPIO as GPIO
     import spidev
@@ -17,8 +24,14 @@ try:
     import neopixel
     import pygame
     RASPBERRY_PI = True
-except ImportError:
+except (ImportError, RuntimeError):
     RASPBERRY_PI = False
+
+# Override with environment variable if set
+if SIMULATION_MODE:
+    RASPBERRY_PI = False
+    print("Warning: Running in simulation mode (forced by SIMULATION_MODE=true)")
+elif not RASPBERRY_PI:
     print("Warning: Running in simulation mode (not on Raspberry Pi)")
 
 class HardwareController:
@@ -191,8 +204,9 @@ class HardwareController:
     def read_potentiometer(self) -> int:
         """Read potentiometer value for brightness control"""
         if not RASPBERRY_PI or not self.spi:
-            import random
-            return random.randint(0, 100)
+            # In simulation mode, return stable value instead of random
+            # This prevents unwanted brightness changes during development
+            return 50  # Fixed brightness for simulation
 
         try:
             channel = self.config["hardware_pins"]["mcp3008"]["brightness_channel"]

@@ -53,7 +53,7 @@ class DatabaseManager:
                 """
                 )
 
-                # Environmental data table
+                # Environmental data table (enhanced for detailed air quality and weather)
                 cursor.execute(
                     """
                     CREATE TABLE IF NOT EXISTS environmental_data (
@@ -61,7 +61,9 @@ class DatabaseManager:
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                         data_type TEXT NOT NULL,
                         value REAL,
-                        details TEXT
+                        details TEXT,
+                        source TEXT,
+                        location TEXT
                     )
                 """
                 )
@@ -107,7 +109,7 @@ class DatabaseManager:
             self.logger.error(f"Failed to log user action: {e}")
 
     def log_environmental_data(
-        self, data_type: str, value: float, details: Dict = None
+        self, data_type: str, value: float, details: Dict = None, source: str = None, location: str = None
     ):
         """Log environmental sensor data"""
         try:
@@ -117,15 +119,125 @@ class DatabaseManager:
                 cursor = conn.cursor()
                 cursor.execute(
                     """
-                    INSERT INTO environmental_data (data_type, value, details)
-                    VALUES (?, ?, ?)
+                    INSERT INTO environmental_data (data_type, value, details, source, location)
+                    VALUES (?, ?, ?, ?, ?)
                 """,
-                    (data_type, value, details_json),
+                    (data_type, value, details_json, source, location),
                 )
                 conn.commit()
 
         except Exception as e:
             self.logger.error(f"Failed to log environmental data: {e}")
+
+    def log_air_quality_detailed(self, aqi_data: Dict):
+        """Log detailed air quality data from WAQI or other sources"""
+        try:
+            aqi = aqi_data.get('aqi', 0)
+            source = aqi_data.get('source', 'unknown')
+            location = aqi_data.get('location', 'Unknown')
+            components = aqi_data.get('components', {})
+            
+            # Log main AQI value
+            self.log_environmental_data('aqi', aqi, components, source, location)
+            
+            self.logger.debug(f"Logged air quality data: AQI={aqi}, Source={source}, Location={location}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to log detailed air quality: {e}")
+
+    def log_weather_detailed(self, weather_data: Dict):
+        """Log detailed weather data from hybrid sources"""
+        try:
+            temperature = weather_data.get('temperature', 0)
+            source = weather_data.get('source', 'unknown')
+            location = weather_data.get('location', 'Unknown')
+            
+            # Create details dict with all weather info
+            details = {
+                'feels_like': weather_data.get('feels_like'),
+                'humidity': weather_data.get('humidity'),
+                'pressure': weather_data.get('pressure'),
+                'wind_speed': weather_data.get('wind_speed'),
+                'wind_direction': weather_data.get('wind_direction'),
+                'condition': weather_data.get('condition'),
+                'precipitation_mm': weather_data.get('precipitation_mm'),
+                'uv_index': weather_data.get('uv_index'),
+            }
+            
+            # Log temperature with all details
+            self.log_environmental_data('temperature', temperature, details, source, location)
+            
+            self.logger.debug(f"Logged weather data: Temp={temperature}°C, Source={source}, Location={location}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to log detailed weather: {e}")
+
+    def get_air_quality_history(self, hours: int = 24) -> List[Dict]:
+        """Get air quality history for the last N hours"""
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"""
+                    SELECT timestamp, value, details, source, location
+                    FROM environmental_data
+                    WHERE data_type = 'aqi'
+                    AND timestamp >= datetime('now', '-{hours} hours')
+                    ORDER BY timestamp DESC
+                """
+                )
+                
+                rows = cursor.fetchall()
+                history = []
+                for row in rows:
+                    history.append({
+                        'timestamp': row[0],
+                        'aqi': row[1],
+                        'details': json.loads(row[2]) if row[2] else {},
+                        'source': row[3],
+                        'location': row[4]
+                    })
+                
+                return history
+
+        except Exception as e:
+            self.logger.error(f"Failed to get air quality history: {e}")
+            return []
+
+    def get_weather_history(self, hours: int = 24) -> List[Dict]:
+        """Get weather history for the last N hours"""
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"""
+                    SELECT timestamp, value, details, source, location
+                    FROM environmental_data
+                    WHERE data_type = 'temperature'
+                    AND timestamp >= datetime('now', '-{hours} hours')
+                    ORDER BY timestamp DESC
+                """
+                )
+                
+                rows = cursor.fetchall()
+                history = []
+                for row in rows:
+                    details = json.loads(row[2]) if row[2] else {}
+                    history.append({
+                        'timestamp': row[0],
+                        'temperature': row[1],
+                        'humidity': details.get('humidity'),
+                        'pressure': details.get('pressure'),
+                        'condition': details.get('condition'),
+                        'source': row[3],
+                        'location': row[4]
+                    })
+                
+                return history
+
+        except Exception as e:
+            self.logger.error(f"Failed to get weather history: {e}")
+            return []
 
     def get_user_patterns(self, days: int = 7) -> List[Dict]:
         """Get user interaction patterns for ML training"""

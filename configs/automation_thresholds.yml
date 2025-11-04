@@ -12,7 +12,8 @@ air_quality_check_interval: 600
 weather_check_interval: 900
 
 # ML Model Settings
-ml_learning_period_days: 7
-ml_prediction_accuracy_threshold: 0.75
-ml_model_update_interval: 3600
-ml_data_collection_interval: 60
+ml_model_settings:
+  learning_period_days: 7
+  prediction_accuracy_threshold: 0.75
+  model_update_interval: 3600
+  data_collection_interval: 60

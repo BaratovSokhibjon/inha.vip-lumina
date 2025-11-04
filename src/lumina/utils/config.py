@@ -19,9 +19,18 @@ def load_config():
             with open(os.path.join(config_dir, filename), "r") as f:
                 config.update(yaml.safe_load(f))
 
-    # Load sensitive data from .env
+    # Load all .env variables into config
+    # This makes all environment variables available as config keys
+    for key, value in os.environ.items():
+        # Load all uppercase env vars that look like config (not system vars)
+        if key.isupper() and not key.startswith(('PATH', 'HOME', 'USER', 'SHELL', 'PWD', 'LANG', 'LC_', 'XDG_', 'DISPLAY', 'TERM', 'VIRTUAL_ENV')):
+            config[key] = value
+
+    # Also keep the api section for backward compatibility
     config["api"] = {
         "openweather_api_key": os.getenv("OPENWEATHER_API_KEY"),
+        "waqi_api_key": os.getenv("WAQI_API_KEY"),
+        "weatherapi_key": os.getenv("WEATHERAPI_KEY"),
     }
 
     return config

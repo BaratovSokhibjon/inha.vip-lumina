@@ -19,7 +19,7 @@ from typing import Dict, Tuple, Optional
 
 from lumina.hardware.hardware import HardwareController
 from lumina.automation.sensors import SensorManager
-from lumina.automation.ml import MLManager
+# from lumina.automation.ml import MLManager  # Commented out for testing
 from lumina.database.database import DatabaseManager
 from lumina.utils.base import Utils
 
@@ -34,7 +34,7 @@ class LampController:
         self.hardware = HardwareController(config)
         self.sensors = SensorManager(config)
         self.db = DatabaseManager(config)
-        self.ml = MLManager(self.db, config)
+        # self.ml = MLManager(self.db, config)  # Commented out for testing
         self.utils = Utils()
 
         # Lamp state
@@ -285,10 +285,10 @@ class LampController:
                     self.cycle_color()
                     last_color_cycle = current_time
 
-                # ML-based automation (every hour)
-                if current_time - last_ml_check > self.config["ml_model_settings"]["ml_model_update_interval"]:
-                    self._check_ml_automation()
-                    last_ml_check = current_time
+                # ML-based automation (every hour) - commented out
+                # if current_time - last_ml_check > self.config["ml_model_settings"]["ml_model_update_interval"]:
+                #     self._check_ml_automation()
+                #     last_ml_check = current_time
 
                 time.sleep(1)  # Check every second
 
@@ -350,7 +350,7 @@ class LampController:
                 "is_on": self.is_on,
                 "current_color": self.current_color,
                 "current_brightness": self.current_brightness,
-                "mode": self..mode,
+                "mode": self.mode,
                 "auto_color_cycling": self.auto_color_cycling,
                 "current_color_index": self.current_color_index,
                 "timestamp": datetime.now().isoformat(),

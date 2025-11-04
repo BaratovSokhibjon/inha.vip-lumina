@@ -16,11 +16,26 @@ class Settings:
     """Application settings and configuration"""
 
     def __init__(self):
-        # API Configuration
+        # API Configuration - Earthquake
         self.EARTHQUAKE_API_URL = os.getenv(
             "EARTHQUAKE_API_URL",
             "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson",
         )
+        
+        # NEW: WAQI Air Quality API Configuration
+        self.WAQI_API_KEY = os.getenv("WAQI_API_KEY", "")
+        self.WAQI_API_URL = os.getenv("WAQI_API_URL", "https://api.waqi.info/feed")
+        self.WAQI_LOCATION = os.getenv("WAQI_LOCATION", "seoul")
+        
+        # NEW: WeatherAPI.com Configuration
+        self.WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY", "")
+        self.WEATHERAPI_URL = os.getenv("WEATHERAPI_URL", "http://api.weatherapi.com/v1")
+        
+        # Weather Data Source Strategy
+        self.WEATHER_DATA_SOURCE = os.getenv("WEATHER_DATA_SOURCE", "hybrid")
+        self.USE_WAQI_FOR_BASIC_WEATHER = os.getenv("USE_WAQI_FOR_BASIC_WEATHER", "true").lower() == "true"
+        
+        # DEPRECATED: OpenWeatherMap (keep for backward compatibility)
         self.OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
         self.OPENWEATHER_API_URL = os.getenv(
             "OPENWEATHER_API_URL",
@@ -29,6 +44,8 @@ class Settings:
         self.WEATHER_API_URL = os.getenv(
             "WEATHER_API_URL", "http://api.openweathermap.org/data/2.5/weather"
         )
+        
+        # Radio API
         self.RADIO_API_URL = os.getenv(
             "RADIO_API_URL", "http://all.api.radio-browser.info/json/stations/search"
         )
@@ -169,10 +186,24 @@ class Settings:
 
     def is_api_key_valid(self):
         """Check if required API keys are present"""
+        # Check new APIs first
+        if self.WAQI_API_KEY and self.WAQI_API_KEY != "your_waqi_token_here":
+            return True
+        if self.WEATHERAPI_KEY and self.WEATHERAPI_KEY != "your_weatherapi_key_here":
+            return True
+        # Fallback to legacy OpenWeatherMap
         return bool(
             self.OPENWEATHER_API_KEY
             and self.OPENWEATHER_API_KEY != "your_openweather_api_key_here"
         )
+    
+    def is_waqi_configured(self):
+        """Check if WAQI API is configured"""
+        return bool(self.WAQI_API_KEY and self.WAQI_API_KEY != "your_waqi_token_here")
+    
+    def is_weatherapi_configured(self):
+        """Check if WeatherAPI is configured"""
+        return bool(self.WEATHERAPI_KEY and self.WEATHERAPI_KEY != "your_weatherapi_key_here")
 
     def __str__(self):
         """String representation for debugging"""
@@ -183,5 +214,9 @@ Settings Configuration:
 - Air quality threshold: {self.BAD_AIR_THRESHOLD}
 - Temperature range: {self.COLD_TEMPERATURE_THRESHOLD}°C - {self.HOT_TEMPERATURE_THRESHOLD}°C
 - ML learning period: {self.ML_LEARNING_PERIOD_DAYS} days
-- API key configured: {self.is_api_key_valid()}
+- Weather data source: {self.WEATHER_DATA_SOURCE}
+- API Keys:
+  - WAQI: {self.is_waqi_configured()}
+  - WeatherAPI: {self.is_weatherapi_configured()}
+  - OpenWeatherMap (legacy): {bool(self.OPENWEATHER_API_KEY)}
         """
