@@ -19,7 +19,7 @@ from typing import Dict, Tuple, Optional
 
 from lumina.hardware.hardware import HardwareController
 from lumina.automation.sensors import SensorManager
-# from lumina.automation.ml import MLManager  # Commented out for testing
+from lumina.ml.core import LuminaMLSystem
 from lumina.database.database import DatabaseManager
 from lumina.utils.base import Utils
 
@@ -34,7 +34,7 @@ class LampController:
         self.hardware = HardwareController(config)
         self.sensors = SensorManager(config)
         self.db = DatabaseManager(config)
-        # self.ml = MLManager(self.db, config)  # Commented out for testing
+        self.ml = LuminaMLSystem(self.db)  # New enhanced ML system
         self.utils = Utils()
 
         # Lamp state
@@ -66,7 +66,22 @@ class LampController:
         # Load previous state
         self._load_state()
 
+        # Initialize ML system
+        self.ml.initialize()
+
         self.logger.info("Lamp controller initialized")
+
+    def _get_environmental_data(self) -> Dict:
+        """Get current environmental data for ML logging"""
+        try:
+            return {
+                'temperature': self.sensors.weather_data.get('temperature'),
+                'humidity': self.sensors.weather_data.get('humidity'),
+                'aqi': self.sensors.air_quality_data.get('aqi'),
+                'condition': self.sensors.weather_data.get('condition')
+            }
+        except Exception:
+            return {}
 
     def _setup_callbacks(self):
         """Setup callback functions for hardware and sensors"""
@@ -89,10 +104,14 @@ class LampController:
         else:
             self.turn_on()
 
-        # Log user action
+        # Log user action with enhanced ML system
         action = "TURN_ON" if self.is_on else "TURN_OFF"
-        self.db.log_user_action(
-            action, self.current_color if self.is_on else None, self.current_brightness
+        environmental_data = self._get_environmental_data()
+        self.ml.log_user_action(
+            action=action,
+            color=self.current_color if self.is_on else None,
+            brightness=self.current_brightness,
+            environmental_data=environmental_data
         )
 
     def _on_color_button(self):
@@ -101,9 +120,13 @@ class LampController:
             self.logger.info("Color button pressed")
             self.cycle_color()
 
-            # Log user action
-            self.db.log_user_action(
-                "COLOR_CHANGE", self.current_color, self.current_brightness
+            # Log user action with enhanced ML system
+            environmental_data = self._get_environmental_data()
+            self.ml.log_user_action(
+                action="COLOR_CHANGE",
+                color=self.current_color,
+                brightness=self.current_brightness,
+                environmental_data=environmental_data
             )
 
     def _on_mode_button(self):
@@ -341,7 +364,7 @@ class LampController:
 
     def train_ml_model(self):
         """Manually trigger ML model training"""
-        return self.ml.train_models()
+        return self.ml.force_retraining()
 
     def _save_state(self):
         """Save current lamp state to file"""
@@ -400,7 +423,7 @@ class LampController:
             },
             "hardware": self.hardware.get_status(),
             "sensors": self.sensors.get_status(),
-            "ml": self.ml.get_status(),
+            "ml": self.ml.get_system_status(),
             "database": self.db.get_stats(),
         }
 

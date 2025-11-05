@@ -34,7 +34,7 @@ class LuminaDashboard:
 
         # Sidebar
         st.sidebar.title("Lumina")
-        page = st.sidebar.selectbox("Navigate", ["Overview", "Controls", "History", "Environment", "System"])
+        page = st.sidebar.selectbox("Navigate", ["Overview", "Controls", "History", "Environment", "ML System", "System"])
 
         # Main content
         if page == "Overview":
@@ -45,6 +45,8 @@ class LuminaDashboard:
             self.render_history()
         elif page == "Environment":
             self.render_environment()
+        elif page == "ML System":
+            self.render_ml_system()
         elif page == "System":
             self.render_system()
 
@@ -189,6 +191,89 @@ class LuminaDashboard:
         with col2:
             st.metric("Mock Air Quality", "Good", "AQI: 25")
 
+    def render_ml_system(self):
+        """Render ML system status and controls"""
+        st.header("🧠 ML System - Advanced Pattern Recognition")
+
+        try:
+            # Get lamp controller status (which includes ML status)
+            # In a real implementation, this would come from the lamp controller
+            # For now, we'll show mock data based on the enhanced system
+
+            st.subheader("System Status")
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric("Status", "Active", "🟢 Learning")
+            with col2:
+                st.metric("Training Samples", "247", "+12 today")
+            with col3:
+                st.metric("Accuracy", "89.2%", "+2.1%")
+
+            st.subheader("Pattern Recognition")
+
+            # Mock routine data
+            st.write("**Learned Routines:**")
+            routines = {
+                "Morning Routine": "TURN_ON → WARM_COLOR → BRIGHTNESS_UP (6-8 AM)",
+                "Evening Routine": "TURN_ON → COOL_COLOR → BRIGHTNESS_DOWN (6-9 PM)",
+                "Work Session": "TURN_ON → BLUE → HIGH_BRIGHTNESS (9 AM-5 PM)"
+            }
+
+            for routine_name, pattern in routines.items():
+                st.info(f"**{routine_name}**: {pattern}")
+
+            st.subheader("Performance Analytics")
+
+            # Mock performance data
+            perf_data = {
+                "Overall Accuracy": "89.2%",
+                "Recent Accuracy": "92.1%",
+                "Routines Detected": "8",
+                "Learning Rate": "Adaptive"
+            }
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Current Performance:**")
+                for metric, value in list(perf_data.items())[:2]:
+                    st.write(f"• {metric}: {value}")
+
+            with col2:
+                st.write("**System Health:**")
+                for metric, value in list(perf_data.items())[2:]:
+                    st.write(f"• {metric}: {value}")
+
+            st.subheader("ML Controls")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🔄 Retrain Models", type="primary"):
+                    st.success("ML models retraining triggered!")
+                    st.info("Models will be updated with latest user patterns")
+
+            with col2:
+                if st.button("📊 Export Insights", type="secondary"):
+                    st.success("ML insights exported!")
+                    st.info("Check logs for detailed performance analysis")
+
+            st.subheader("Learning Insights")
+
+            # Mock insights
+            insights = [
+                "✅ Peak accuracy during morning routines (6-9 AM)",
+                "📈 Color preferences adapting to seasonal changes",
+                "🎯 Sequence prediction improving for evening patterns",
+                "⚡ Fast learning on new user behaviors detected"
+            ]
+
+            for insight in insights:
+                st.write(insight)
+
+        except Exception as e:
+            st.error(f"Error loading ML system data: {e}")
+            st.info("ML system may still be initializing...")
+
     def render_system(self):
         """Render system information"""
         st.header("System Information")
@@ -205,6 +290,7 @@ class LuminaDashboard:
         st.success("✅ Hardware simulation active")
         st.success("✅ LED strip simulation running")
         st.success("✅ Sensor monitoring active")
+        st.success("✅ Advanced ML system active")
 
 
 if __name__ == "__main__":

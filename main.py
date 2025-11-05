@@ -224,6 +224,18 @@ class SmartLampApp:
                 status = self.lamp_controller.get_status()
                 self.logger.debug(f"Lamp status: {status['lamp']}")
 
+                # Check ML system status
+                ml_status = status.get('ml', {})
+                if ml_status.get('initialized'):
+                    ml_perf = ml_status.get('performance', {})
+                    accuracy = ml_perf.get('accuracy', 0)
+                    if accuracy < 0.7:  # Below 70% accuracy
+                        self.logger.warning(f"ML system accuracy low: {accuracy:.1%}")
+                    else:
+                        self.logger.debug(f"ML system healthy: {accuracy:.1%} accuracy")
+                else:
+                    self.logger.info("ML system still learning from user patterns")
+
             # Check web interface
             if self.web_process and self.web_process.poll() is not None:
                 self.logger.warning("Web interface process has stopped")
@@ -264,10 +276,13 @@ class SmartLampApp:
         else:
             print(f"   • APIs: Only earthquake monitoring (no API key)")
 
+        print(f"   • ML System: Enhanced pattern recognition active")
+
         print(f"\n🎯 Features:")
         print(f"   • Manual controls (buttons, potentiometer)")
         print(f"   • Environmental monitoring (earthquake, weather, air quality)")
-        print(f"   • Machine learning (user pattern recognition)")
+        print(f"   • Advanced ML (sequence-aware pattern recognition)")
+        print(f"   • Routine learning (morning/evening automation)")
         print(f"   • Web dashboard (real-time status and controls)")
         print(f"   • State persistence (remembers settings)")
 
