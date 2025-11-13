@@ -1,13 +1,6 @@
 RPi.GPIO
-spidev
 board
 neopixel
-pygame
 requests
-pyserial
-scikit-learn
-joblib
-psutil
-python-dotenv
 pyyaml
-streamlit
+flask

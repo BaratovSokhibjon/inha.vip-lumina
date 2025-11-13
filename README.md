@@ -1,110 +1,110 @@
-# Lumina - Smart Lamp with ML-Powered Intelligence
+# Lumina - Smart Lamp
 
-A focused smart home project featuring an intelligent lamp with advanced machine learning capabilities for personalized lighting automation.
+Ultra-minimal smart lamp with RGB LED control, earthquake alerts, and web dashboard.
 
 ## Features
-
-### Core Smart Lamp Functionality
-- **RGB Color Control**: Full spectrum color customization
-- **Brightness Adjustment**: Precise lighting intensity control
-- **On/Off Automation**: Intelligent power management
-- **Hardware Integration**: Raspberry Pi GPIO and LED strip support
-
-### Advanced ML-Powered Intelligence
-- **Behavioral Pattern Recognition**: Learns user lighting preferences and routines
-- **Sequence-Aware Predictions**: Understands action sequences and timing patterns
-- **Environmental Context Integration**: Adapts to weather, temperature, and air quality
-- **Adaptive Learning**: Continuously improves predictions through feedback
-- **Routine Detection**: Identifies morning/evening patterns and weekday/weekend differences
-- **Confidence Calibration**: Provides reliable prediction confidence scores
-
-### Key ML Capabilities
-- **61+ Feature Engineering**: Comprehensive behavioral analysis
-- **Markov Chain Modeling**: Sequence prediction for action patterns
-- **Routine Clustering**: Automatic routine identification and learning
-- **Performance Monitoring**: Real-time accuracy tracking and improvement
-- **85-90% Expected Accuracy**: High-confidence predictions for common scenarios
+- RGB LED control (NeoPixel strips)
+- Hardware buttons and potentiometer
+- USGS earthquake monitoring
+- Flask web dashboard
+- SQLite state persistence
 
 ## Installation
-
-### From Source
 ```bash
-git clone <repository-url>
-cd lumina
 pip install -r requirements.txt
-python setup.py develop
 ```
 
-### Quick Demo
+## Quick Start
+
+### On Raspberry Pi 4
 ```bash
-python ml_demo.py
+./lumina          # Starts lamp automation + web dashboard
 ```
 
-## Usage
-
-### Basic Operation
+### On Laptop (Mock Mode)
 ```bash
-# Start the main application
-python main.py
-
-# Run with web interface
-python app.py
+python3 test_laptop.py                # Run automated tests
+python3 src/lumina/web/app.py         # Start web dashboard only
+# Open http://localhost:5000
 ```
 
-### ML System Demo
+## Testing Without Raspberry Pi
+
+Since GPIO pins aren't available on a laptop, the system automatically enables **Mock Mode**:
+
+**What works in Mock Mode:**
+- ✓ Web dashboard (full functionality)
+- ✓ Color/brightness changes (printed to console)
+- ✓ Mode switching (AUTO/MANUAL)
+- ✓ Earthquake monitoring (real USGS API)
+- ✓ Database logging
+- ✓ State persistence
+
+**Mock output example:**
+```
+[MOCK MODE] Hardware simulation enabled - GPIO not available
+[MOCK] LEDs ON: RGB(255,0,0) @ 80%
+[MOCK] LEDs BLINK: RGB(255,0,0) x5
+```
+
+**Run test suite:**
 ```bash
-# Test the ML capabilities
-python ml_demo.py
+python3 test_laptop.py
 ```
 
-### Web Dashboard
-The application includes a Streamlit-based web interface for:
-- Real-time lamp control
-- ML system monitoring
-- Performance analytics
-- Routine visualization
+**Test web dashboard:**
+```bash
+python3 src/lumina/web/app.py
+# Open http://localhost:5000
+# Use buttons to control lamp
+# Watch console for mock LED output
+```
+
+## Project Structure
+```
+src/lumina/
+├── hardware/
+│   ├── lamp.py           # Main lamp controller (145 lines)
+│   └── hardware.py       # GPIO/LED control (67 lines)
+├── automation/
+│   └── sensors.py        # Earthquake monitoring (42 lines)
+├── database/
+│   └── database.py       # SQLite storage (40 lines)
+├── utils/
+│   └── config.py         # YAML config loader (18 lines)
+└── web/
+    └── app.py            # Flask dashboard (78 lines)
+
+Total: 407 lines (excluding empty __init__.py files)
+```
+
+## Configuration
+Edit `configs/` YAML files:
+- `hardware_pins.yml` - GPIO pins, button settings
+- `colors.yml` - RGB color presets
+- `automation_thresholds.yml` - Sensor thresholds
 
 ## Architecture
 
-### Modular Design
-- **Hardware Layer**: GPIO, LED control, sensor integration
-- **ML System**: Advanced pattern recognition and prediction
-- **Web Interface**: User-friendly control and monitoring
-- **Database**: Persistent storage for patterns and settings
+**Hardware Layer**
+- Automatic GPIO detection (`HAS_GPIO` flag)
+- Graceful fallback to mock mode
+- Button callbacks for power/color/mode
 
-### ML Pipeline
-1. **Data Collection**: Rich behavioral logging with environmental context
-2. **Feature Engineering**: 61+ features for comprehensive analysis
-3. **Model Training**: Sequence-aware prediction models
-4. **Adaptive Learning**: Continuous improvement through feedback
-5. **Prediction**: High-confidence action recommendations
+**Automation**
+- USGS earthquake API monitoring (300s interval)
+- Potentiometer brightness control (2s polling)
+- AUTO mode color cycling (configurable interval)
 
-## Development
+**Web Dashboard**
+- Single-page control interface
+- Real-time status updates (2s polling)
+- Direct lamp control via HTTP endpoints
 
-### Testing
-```bash
-# Run the ML demo to validate functionality
-python ml_demo.py
-```
-
-### Project Structure
-```
-src/lumina/
-├── ml/                 # Machine Learning System
-│   ├── core.py        # Main ML interface
-│   ├── data/          # Data collection & preprocessing
-│   ├── models/        # Prediction models
-│   └── learning/      # Adaptive learning
-├── hardware/          # Lamp hardware control
-├── web/              # Web dashboard
-├── database/         # Data persistence
-└── config/           # Configuration management
-```
-
-## Contributing
-
-This project focuses on core smart lamp functionality with advanced ML intelligence. Contributions should align with the simplified, modular architecture.
+**Database**
+- Events table for logging
+- State table for persistence
+- Single SQLite file
 
 ## License
-
-MIT License
+MIT

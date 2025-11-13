@@ -46,7 +46,6 @@ system:
   log_file_path: logs/lumina.log
   ml_model_path: models/user_pattern.pkl
   streamlit_port: 8501
-  state_file_path: data/lamp_state.json
   log_level: INFO
 
 web:
