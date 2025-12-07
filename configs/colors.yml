@@ -2,17 +2,6 @@
 
 default_color: [255, 255, 255]
 
-# Air Quality Colors
-aqi_good_color: [0, 255, 0]
-aqi_moderate_color: [255, 255, 0]
-aqi_unhealthy_color: [255, 165, 0]
-aqi_dangerous_color: [255, 0, 0]
-
-# Temperature Colors
-cold_color: [0, 191, 255]
-warm_color: [255, 255, 255]
-hot_color: [255, 140, 0]
-
 # Alert Colors
 earthquake_alert_color: [255, 0, 0]
 emergency_color: [255, 0, 255]

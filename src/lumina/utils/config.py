@@ -8,7 +8,6 @@ def load_config():
         "white_color": [255, 255, 255],
         "brightness_settings": {"default_brightness": 50, "min_brightness": 0, "max_brightness": 100},
         "auto_mode_settings": {"auto_color_cycle_interval": 10},
-        "system": {"state_file_path": "data/lamp_state.json"},
         "earthquake_alert_color": [255, 0, 0]
     }
     for file in ["configs/colors.yml", "configs/hardware_pins.yml", "configs/automation_thresholds.yml"]:

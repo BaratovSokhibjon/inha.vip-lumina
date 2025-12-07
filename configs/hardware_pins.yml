@@ -1,19 +1,6 @@
 # Hardware pin mappings for Lumina
 
 hardware_pins:
-  # RGB LED Pins (Individual LEDs)
-  rgb_led_1_red_pin: 18
-  rgb_led_1_green_pin: 19
-  rgb_led_1_blue_pin: 20
-
-  rgb_led_2_red_pin: 21
-  rgb_led_2_green_pin: 22
-  rgb_led_2_blue_pin: 23
-
-  rgb_led_3_red_pin: 24
-  rgb_led_3_green_pin: 25
-  rgb_led_3_blue_pin: 26
-
   # LED Strip Configuration
   led_strip_pin: 12
   led_strip_count: 60
@@ -42,11 +29,9 @@ hardware_pins:
 system_startup_delay: 2
 
 system:
-  database_path: data/storage.db
+  database_path: data/lumina.db
   log_file_path: logs/lumina.log
-  ml_model_path: models/user_pattern.pkl
-  streamlit_port: 8501
   log_level: INFO
 
 web:
-  port: 8501
+  update_interval: 5

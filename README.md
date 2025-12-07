@@ -23,33 +23,13 @@ pip install -r requirements.txt
 
 ### On Laptop (Mock Mode)
 ```bash
-python3 test_laptop.py                # Run automated tests
+python3 tests/test_laptop.py          # Run automated tests
 python3 src/lumina/web/app.py         # Start web dashboard only
 # Open http://localhost:5000
 ```
-
-## Testing Without Raspberry Pi
-
-Since GPIO pins aren't available on a laptop, the system automatically enables **Mock Mode**:
-
-**What works in Mock Mode:**
-- ✓ Web dashboard (full functionality)
-- ✓ Color/brightness changes (printed to console)
-- ✓ Mode switching (AUTO/MANUAL)
-- ✓ Earthquake monitoring (real USGS API)
-- ✓ Database logging
-- ✓ State persistence
-
-**Mock output example:**
-```
-[MOCK MODE] Hardware simulation enabled - GPIO not available
-[MOCK] LEDs ON: RGB(255,0,0) @ 80%
-[MOCK] LEDs BLINK: RGB(255,0,0) x5
-```
-
 **Run test suite:**
 ```bash
-python3 test_laptop.py
+python3 tests/test_laptop.py
 ```
 
 **Test web dashboard:**
@@ -58,24 +38,6 @@ python3 src/lumina/web/app.py
 # Open http://localhost:5000
 # Use buttons to control lamp
 # Watch console for mock LED output
-```
-
-## Project Structure
-```
-src/lumina/
-├── hardware/
-│   ├── lamp.py           # Main lamp controller (145 lines)
-│   └── hardware.py       # GPIO/LED control (67 lines)
-├── automation/
-│   └── sensors.py        # Earthquake monitoring (42 lines)
-├── database/
-│   └── database.py       # SQLite storage (40 lines)
-├── utils/
-│   └── config.py         # YAML config loader (18 lines)
-└── web/
-    └── app.py            # Flask dashboard (78 lines)
-
-Total: 407 lines (excluding empty __init__.py files)
 ```
 
 ## Configuration
@@ -96,9 +58,9 @@ Edit `configs/` YAML files:
 - Potentiometer brightness control (2s polling)
 - AUTO mode color cycling (configurable interval)
 
-**Web Dashboard**
+**Flask Web Dashboard**
 - Single-page control interface
-- Real-time status updates (2s polling)
+- Real-time status updates (5s polling)
 - Direct lamp control via HTTP endpoints
 
 **Database**
