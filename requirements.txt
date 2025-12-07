@@ -1,6 +1,7 @@
 RPi.GPIO
-board
-neopixel
+rpi_ws281x
+adafruit-blinka
+adafruit-circuitpython-neopixel
 requests
 pyyaml
 flask
