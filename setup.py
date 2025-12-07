@@ -2,12 +2,21 @@ from setuptools import setup, find_packages
 
 setup(
     name='lumina',
-    version='1.0.0',
+    version='2.0.0',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     entry_points={
         'console_scripts': [
-            'lumina = lumina.core.cli:main',
+            'lumina=lumina.cli:main',
         ],
     },
+    install_requires=[
+        'Flask>=2.0.0',
+        'PyYAML>=6.0',
+        'requests>=2.28.0',
+        'RPi.GPIO',
+        'rpi_ws281x',
+        'adafruit-blinka',
+        'adafruit-circuitpython-neopixel',
+    ],
 )

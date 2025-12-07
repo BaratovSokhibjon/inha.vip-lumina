@@ -1,27 +1,17 @@
-"""
-Configuration loader for Lumina
-"""
-
-import os
-import yaml
-from dotenv import load_dotenv
+import yaml, os
 
 def load_config():
-    """Load configuration from YAML files and .env file"""
-    load_dotenv()
-
-    config = {}
-
-    # Load YAML files
-    config_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "configs"))
-    for filename in os.listdir(config_dir):
-        if filename.endswith(".yml"):
-            with open(os.path.join(config_dir, filename), "r") as f:
-                config.update(yaml.safe_load(f))
-
-    # Load sensitive data from .env
-    config["api"] = {
-        "openweather_api_key": os.getenv("OPENWEATHER_API_KEY"),
+    config = {
+        "default_color": [255, 255, 255],
+        "red_color": [255, 0, 0], "green_color": [0, 255, 0], "blue_color": [0, 0, 255],
+        "yellow_color": [255, 255, 0], "magenta_color": [255, 0, 255], "cyan_color": [0, 255, 255],
+        "white_color": [255, 255, 255],
+        "brightness_settings": {"default_brightness": 50, "min_brightness": 0, "max_brightness": 100},
+        "auto_mode_settings": {"auto_color_cycle_interval": 10},
+        "earthquake_alert_color": [255, 0, 0]
     }
-
+    for file in ["configs/colors.yml", "configs/hardware_pins.yml", "configs/automation_thresholds.yml"]:
+        if os.path.exists(file):
+            with open(file) as f:
+                config.update(yaml.safe_load(f) or {})
     return config

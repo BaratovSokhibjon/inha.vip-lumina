@@ -1,13 +1,7 @@
 RPi.GPIO
-spidev
-board
-neopixel
-pygame
+rpi_ws281x
+adafruit-blinka
+adafruit-circuitpython-neopixel
 requests
-pyserial
-scikit-learn
-joblib
-psutil
-python-dotenv
 pyyaml
-streamlit
+flask
